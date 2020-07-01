@@ -17,7 +17,7 @@ class Roach
     public function __construct($config = [])
     {
         foreach ($config as $property => $value) {
-            $this->$property = $value;
+            $this->$property = Container::insure($value);
         }
     }
 }
