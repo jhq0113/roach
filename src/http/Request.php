@@ -4,6 +4,7 @@ namespace roach\http;
 use roach\Container;
 use roach\events\Event;
 use roach\events\EventObject;
+use roach\Roach;
 
 /**
  * Class Request
@@ -12,7 +13,7 @@ use roach\events\EventObject;
  * @author   roach
  * @email    jhq0113@163.com
  */
-class Request
+class Request extends Roach
 {
     const GET     = 1;
     const POST    = 2;
