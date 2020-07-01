@@ -1,0 +1,28 @@
+{
+  "name":"jhq0113/roach",
+  "description": "roach",
+  "keywords": ["roach", "php", "tools"],
+  "license": "MIT",
+  "homepage":"https://github.com/jhq0113/roach",
+  "type": "library",
+  "authors": [
+    {
+      "name": "Jiang Haiqiang",
+      "email": "jhq0113@163.com",
+      "homepage": "https://github.com/jhq0113",
+      "role": "Owner"
+    }
+  ],
+  "require": {
+    "php": "^5.6",
+    "ext-curl": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "roach\\": "src/"
+    }
+  }
+}
