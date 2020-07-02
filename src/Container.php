@@ -54,17 +54,19 @@ class Container extends IExtension
         return self::$_pool[ $key ];
     }
 
+
     /**装配
-     * @param object         $object
-     * @param array|object   $config
-     * @datetime 2019/8/30 15:53
+     * @param object $object
+     * @param mixed  $config
+     * @throws \ReflectionException
+     * @datetime 2020/7/2 11:48 PM
      * @author roach
      * @email jhq0113@163.com
      */
     static public function assem($object,$config)
     {
         foreach ($config as $property => $value) {
-            $object->$property = $value;
+            $object->$property = static::insure($value);
         }
     }
 
@@ -80,7 +82,13 @@ class Container extends IExtension
     {
         $class = new \ReflectionClass($config['class']);
         unset($config['class']);
-        $object = $class->newInstanceArgs([ $config ]);
+
+        if($class->isSubclassOf('roach\Roach')) {
+            $object = $class->newInstanceArgs([ $config ]);
+        } else {
+            $object = $class->newInstance();
+            self::assem($object, $config);
+        }
 
         if(method_exists($object,'init')) {
             $object->init($config);

@@ -13,11 +13,10 @@ class Roach
     /**
      * Roach constructor.
      * @param array $config
+     * @throws \ReflectionException
      */
     public function __construct($config = [])
     {
-        foreach ($config as $property => $value) {
-            $this->$property = Container::insure($value);
-        }
+        Container::assem($this, $config);
     }
 }
