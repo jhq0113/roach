@@ -19,6 +19,10 @@ composer require jhq0113/roach
      - [1.3变量容器](#变量容器)
 - [2.通用异常错误处理](#通用异常错误处理)
 - [3.使用事件](#使用事件)
+- [4.发送HTTP请求](#发送HTTP请求)
+     - [4.1连贯操作发送请求](#连贯操作发送请求)
+     - [4.2通过容器发送请求](#通过容器发送请求)
+     - [4.3并行发送多个请求](#并行发送多个请求)
 
 <!-- /TOC -->
 
@@ -400,5 +404,74 @@ $login->loginByPhone(13000000000, '123456');
 [2020-07-03 06:23:55]   warn:[ start login ]
 [2020-07-03 06:23:55]   info:[ login success:1593757435 ]
 ```
+
+[回到目录](#目录)
+
+## 发送HTTP请求
+
+> 发送HTTP请求需要通过`roach\http\Request`类去发送，该类会自动识别`http`与`https`协议请求。
+
+### 连贯操作发送请求
+
+```php
+<?php
+$res = (new Request())
+        ->setUrl('https://www.baidu.com')
+        ->setTimeout(3)
+        ->setParams([
+            'userName' => 'sdfafd'
+        ])
+        ->post();
+\roach\extensions\ECli::error($res->getBody());
+```
+
+> 以上例程输出
+
+```text
+[2020-07-03 06:44:44]   error:[ <html>
+<head><title>302 Found</title></head>
+<body bgcolor="white">
+<center><h1>302 Found</h1></center>
+<hr><center>nginx</center>
+</body>
+</html>
+ ]
+```
+
+[回到目录](#目录)
+
+### 通过容器发送请求
+
+```php
+/**
+ * @var Request $request
+ */
+$request = Container::createRoach([
+    'class'  => 'roach\http\Request',
+    'url'    => 'https://www.baidu.com',
+    'params' => [
+        'from' => time()
+    ]
+]);
+
+$response = $request->get();
+\roach\extensions\ECli::info($response->getBody());
+```
+
+> 以上例程输出
+
+```text
+[2020-07-03 06:44:44]   info:[ <!DOCTYPE html><!--STATUS OK-->
+<html>
+<head>
+        <meta http-equiv="content-type" content="text/html;charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+        <link rel="dns-prefetch" href="//s1.bdstatic.com"/>
+...
+```
+
+[回到目录](#目录)
+
+### 并行发送多个请求
 
 [回到目录](#目录)
