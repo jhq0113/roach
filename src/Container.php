@@ -83,15 +83,30 @@ class Container extends IExtension
         $class = new \ReflectionClass($config['class']);
         unset($config['class']);
 
-        if($class->isSubclassOf('roach\Roach')) {
-            $object = $class->newInstanceArgs([ $config ]);
-        } else {
-            $object = $class->newInstance();
-            self::assem($object, $config);
+        $calls = [];
+        if(isset($config['calls'])) {
+            $calls = $config['calls'];
+            unset($config['calls']);
         }
 
-        if(method_exists($object,'init')) {
-            $object->init($config);
+        //构造函数注入
+        if(isset($calls['__construct'])) {
+            $object = $class->newInstanceArgs($calls['__construct']);
+            unset($calls['__construct']);
+        } else {
+            $object = $class->newInstance();
+        }
+
+        //属性注入
+        self::assem($object, $config);
+
+        //方法注入
+        foreach ($calls as $key => $value) {
+            if(is_numeric($key)) {
+                call_user_func([ $object, $value]);
+                continue;
+            }
+            call_user_func_array([ $object, $key], $value);
         }
 
         return $object;

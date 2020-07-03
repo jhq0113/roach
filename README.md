@@ -14,7 +14,7 @@ composer require jhq0113/roach
 # 目录
 
 - [1.容器](#容器) 
-     - [1.1创建对象](#创建对象)
+     - [1.1依赖注入](#依赖注入)
      - [1.2依赖注入容器](#依赖注入容器)
      - [1.3变量容器](#变量容器)
     
@@ -34,7 +34,7 @@ namespace app\model;
  * @author roach
  * @email jhq0113@163.com
  */
-class User 
+class User
 {
     /**
      * @var string
@@ -61,13 +61,23 @@ class User
     protected $_currentTime;
 
     /**
-     * @datetime 2020/7/2 11:24 PM
-     * @author roach
-     * @email jhq0113@163.com
+     * User constructor.
+     * @param string $userName
      */
-    public function init()
+    public function __construct($userName = '')
     {
-        $this->_currentTime = time();
+        $this->userName = $userName;
+    }
+
+    /**
+     * @param int $time
+     * @datetime 2020/7/3 1:40 下午
+     * @author   roach
+     * @email    jhq0113@163.com
+     */
+    public function setTime($time)
+    {
+        $this->_currentTime = $time;
     }
 
     /**
@@ -81,42 +91,88 @@ class User
         return $this->_currentTime;
     }
 }
-
 ```
 
-### 创建对象
+### 依赖注入
 
-> 使用`Container`创建以上`app\model\User`类
+> `Container`通过`createRoach`实现依赖注入，`createRoach`方法每次运行都会根据配置创建一个全新的对象。
+
+* 属性注入
 
 ```php
 <?php
 /**
  * @var app\model\User $user
  */
-$user = roach\Container::createRoach([
+$user = Container::createRoach([
     'class' => 'app\model\User',
-    'userName' => 'xiao mage',
-    'password' => hash_hmac('md5', uniqid(), uniqid()),
+    'userName' => 'lao zhou',
+    'password' => hash('sha1', '123456')
+]);
+
+echo json_encode([
+    'userName'    => $user->userName,
+    'password'    => $user->password,
+], JSON_UNESCAPED_UNICODE).PHP_EOL;
+```
+
+> 以上例程输出
+
+```json
+{"userName":"lao zhou", "password":"7c4a8d09ca3762af61e59520943dc26494f8941b"}
+```
+
+* 通过`calls`配置进行构造函数注入
+
+```php
+<?php
+/**
+ * @var app\model\User $user
+ */
+$user = Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        '__construct' => ['xiao mage']
+    ],
 ]);
 
 exit(json_encode([
     'userName'    => $user->userName,
     'password'    => $user->password,
-    'currentTime' => $user->getCurrentTime()
 ], JSON_UNESCAPED_UNICODE).PHP_EOL);
 ```
 
 > 以上例程输出
 
 ```json
-{
-  "userName":"xiao mage",
-  "password":"c712ae92599499f72caf4cfe335085f3",
-  "currentTime":1593703883
-}
+{"userName":"xiao mage", "password":null}
 ```
 
-* 当类实现了`init`方法，`createRoach`方法在实例化对象之后会自动调用`init`方法。
+* 通过`calls`进行方法注入
+
+```php
+/**
+ * @var \app\model\User $user2
+ */
+$user2 = Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        '__construct' => ['boss zhou'],
+        'setTime'     => [ time() ],
+    ],
+]);
+
+echo json_encode([
+    'userName'    => $user2->userName,
+    'currentTime'    => $user2->getCurrentTime(),
+], JSON_UNESCAPED_UNICODE).PHP_EOL;
+```
+
+> 以上例程输出
+
+```json
+{"userName":"boss zhou", "currentTime":1593755048}
+```
 
 [回到目录](#目录)
 
@@ -131,6 +187,9 @@ Container::set('user', [
     'class' => 'app\model\User',
     'userName' => 'platform',
     'password' => hash_hmac('md5', 'roach', uniqid()),
+    'calls'    => [
+        'setTime' => [ time() ]
+    ]
 ]);
 
 /**
@@ -159,8 +218,8 @@ echo json_encode([
 > 以上例程输出
 
 ```text
-{"userName":"platform","password":"f9c4fe32aa4bc45a4e0f136dc1d81fe3","currentTime":1593705480}
-{"userName":"single","password":"f9c4fe32aa4bc45a4e0f136dc1d81fe3","currentTime":1593705480}
+{"userName":"platform","password":"f66d715da660911d2d618cb36c24d30b","currentTime":1593755260}
+{"userName":"single","password":"f66d715da660911d2d618cb36c24d30b","currentTime":1593755260}
 ```
 
 * 1.依赖注入容器的对象是懒加载的，只有在调用`get`方法的时候才会真正的创建对象，创建的对象如果实现了`init`方法，也会自动调用`init`方法

@@ -41,7 +41,7 @@ class ErrorHandler extends Roach
      * @author roach
      * @email jhq0113@163.com
      */
-    public function init()
+    public function run()
     {
         if(!is_callable($this->handler)) {
             throw new Exception('handler属性不可调用');
