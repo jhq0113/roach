@@ -17,6 +17,7 @@ composer require jhq0113/roach
      - [1.1依赖注入](#依赖注入)
      - [1.2依赖注入容器](#依赖注入容器)
      - [1.3变量容器](#变量容器)
+- [2.通用异常错误处理](#通用异常错误处理)
     
 <!-- /TOC -->
 
@@ -251,6 +252,53 @@ echo json_encode(Container::get('user1'), JSON_UNESCAPED_UNICODE).PHP_EOL;
 1593705970
 {"appName":"roach","version":"1.0.0"}
 {"userName":null,"password":null}
+```
+
+[回到目录](#目录)
+
+## 通用异常错误处理
+
+> 使用`roach\exceptions\ErrorHandler`处理通用异常与错误
+
+```php
+<?php
+use roach\Container;
+
+//注入异常处理handler
+Container::set('errorHandler', [
+    'class' => 'roach\exceptions\ErrorHandler',
+    //当捕获未被try...catch捕获的异常，会交由此handler处理
+    'handler' => function(\Throwable $exception) {
+        //打日志
+        //报警。。。
+        exit(json_encode([
+            'code' => $exception->getCode(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine(),
+            'message' => $exception->getMessage(),
+        ],JSON_UNESCAPED_UNICODE).PHP_EOL);
+    }
+]);
+
+/**
+ * @var \roach\exceptions\ErrorHandler $errorHandler
+ */
+$errorHandler = Container::get('errorHandler');
+//注册通用异常处理
+$errorHandler->run();
+
+//出发调用未定义方法错误
+fun();
+//$a =5/0;
+```
+
+> 以上例程输出
+
+```json
+{"code":0,
+"file":"...\/roach\/src\/test\/exception.php",
+"line":25,
+"message":"Call to undefined function fun()"}
 ```
 
 [回到目录](#目录)

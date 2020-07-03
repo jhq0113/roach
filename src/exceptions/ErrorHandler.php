@@ -48,9 +48,9 @@ class ErrorHandler extends Roach
         }
 
         ini_set('display_errors', false);
-        set_error_handler([$this, '_handlerError']);
-        set_exception_handler([$this, '_handlerException']);
-        register_shutdown_function([$this, '_handlerFatalError']);
+        set_error_handler([$this, 'handlerError']);
+        set_exception_handler([$this, 'handlerException']);
+        register_shutdown_function([$this, 'handlerFatalError']);
     }
 
     /**
@@ -62,7 +62,7 @@ class ErrorHandler extends Roach
      * @author roach
      * @email jhq0113@163.com
      */
-    protected function _handlerError($code, $message, $file, $line)
+    public function handlerError($code, $message, $file, $line)
     {
         if (error_reporting() & $code) {
             $exception = new \ErrorException($message, $code, 1, $file, $line);
@@ -76,7 +76,7 @@ class ErrorHandler extends Roach
      * @author roach
      * @email jhq0113@163.com
      */
-    protected function _handlerException($exception)
+    public function handlerException($exception)
     {
         restore_error_handler();
         restore_exception_handler();
@@ -89,7 +89,7 @@ class ErrorHandler extends Roach
      * @author roach
      * @email jhq0113@163.com
      */
-    protected function _handlerFatalError()
+    public function handlerFatalError()
     {
         $error = error_get_last();
 
