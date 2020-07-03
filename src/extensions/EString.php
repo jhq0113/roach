@@ -46,6 +46,10 @@ class EString extends IExtension
      */
     static public function interpolate($message, array $context = [], $leftPlace='{', $rightPlace='}')
     {
+        if(empty($context)) {
+            return $message;
+        }
+
         $replace = [];
         foreach ($context as $key => $val) {
             $replace[$leftPlace . $key . $rightPlace] = $val;

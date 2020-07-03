@@ -18,7 +18,8 @@ composer require jhq0113/roach
      - [1.2依赖注入容器](#依赖注入容器)
      - [1.3变量容器](#变量容器)
 - [2.通用异常错误处理](#通用异常错误处理)
-    
+- [3.使用事件](#使用事件)
+
 <!-- /TOC -->
 
 ## 容器
@@ -299,6 +300,105 @@ fun();
 "file":"...\/roach\/src\/test\/exception.php",
 "line":25,
 "message":"Call to undefined function fun()"}
+```
+
+[回到目录](#目录)
+
+## 使用事件
+
+> 事件是通过`roach\events\Event`实现的，是个`trait`类型，这样任何一个类只要`use`了该`trait`都可以支持事件机制。
+
+* 1.为对象绑定事件，使用`on`方法，`on`方法第二个参数是个`callable`类型，该`callable`会默认附带一个参数，参数类型为`roach\events\EventObject`
+
+* 2.触发对象事件，使用`trigger`方法触发事件，如果对象没有绑定事件，事件不会触发。
+
+> 使用案例
+
+```php
+<?php
+use roach\Container;
+use roach\extensions\ECli;
+
+require __DIR__.'/bootstrap.php';
+
+/**
+ * Class LoginServer
+ * @datetime 2020/7/3 2:13 下午
+ * @author   roach
+ * @email    jhq0113@163.com
+ */
+class Login
+{
+    /**
+     * 使用事件特性
+     */
+    use \roach\events\Event;
+
+    const EVENT_LOGIN_BEFORE   = 'before';
+    const EVENT_LOGIN_SUCCESS  = 'success';
+    const EVENT_LOGIN_FAILED   = 'failed';
+
+    /**
+     * @param int    $phone
+     * @param string $code
+     * @return bool
+     * @datetime 2020/7/3 2:12 下午
+     * @author   roach
+     * @email    jhq0113@163.com
+     */
+    public function loginByPhone($phone, $code)
+    {
+        $this->trigger(self::EVENT_LOGIN_BEFORE);
+
+        if($phone == 13000000000 && $code === '123456') {
+
+            $afterLoginEvent = Container::createRoach([
+                'class' => 'roach\events\EventObject',
+                'sender' => $this,
+                'data'   => [
+                    'userId' => time()
+                ]
+            ]);
+
+            $this->trigger(self::EVENT_LOGIN_SUCCESS, $afterLoginEvent);
+            return true;
+        }
+
+        $this->trigger(self::EVENT_LOGIN_FAILED);
+
+        return false;
+    }
+}
+
+/**
+ * @var Login $login
+ */
+$login = Container::createRoach([
+    'class' => Login::class
+]);
+
+$login->on(Login::EVENT_LOGIN_BEFORE, function (\roach\events\EventObject $event) {
+    ECli::warn('start login');
+});
+
+$login->on(Login::EVENT_LOGIN_FAILED, function (\roach\events\EventObject $event) {
+    ECli::error('login failed');
+});
+
+$login->on(Login::EVENT_LOGIN_SUCCESS, function (\roach\events\EventObject $event) {
+    ECli::info('login success:'.$event->data['userId']);
+});
+
+$login->loginByPhone(1233333, '343434');
+$login->loginByPhone(13000000000, '123456');
+```
+> 以上例程输出
+
+```text
+[2020-07-03 06:23:55]   warn:[ start login ]
+[2020-07-03 06:23:55]   error:[ login failed ]
+[2020-07-03 06:23:55]   warn:[ start login ]
+[2020-07-03 06:23:55]   info:[ login success:1593757435 ]
 ```
 
 [回到目录](#目录)
