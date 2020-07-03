@@ -474,4 +474,42 @@ $response = $request->get();
 
 ### 并行发送多个请求
 
+> 并行发送多个请求可以通过调用`roach\http\Request`的静态方法`multiRequest`实现，参数类型为`roach\http\Request`，参数个数是动态的，`multiRequest`方法会按照参数传入的顺序返回请求结果。
+
+```php
+$req1 = Container::createRoach([
+    'class'  => 'roach\http\Request',
+    'url'    => 'https://www.360.cn',
+]);
+
+$req2 = Container::createRoach([
+    'class'  => 'roach\http\Request',
+    'url'    => 'http://www.sina.com',
+    'params' => [
+        'from' => time()
+    ]
+]);
+
+$req3 = Container::createRoach([
+    'class'  => 'roach\http\Request',
+    'url'    => 'https://www.baidu.com',
+    'params' => [
+        'from' => time()
+    ]
+]);
+
+$respList = Request::multiRequest($req1, $req2, $req3);
+\roach\extensions\ECli::info($respList[0]->get('url'));
+\roach\extensions\ECli::info($respList[1]->get('url'));
+\roach\extensions\ECli::info($respList[2]->get('url'));
+```
+
+> 以上例程输出
+
+```text
+[2020-07-03 07:00:14]   info:[ https://www.360.cn ]
+[2020-07-03 07:00:14]   info:[ http://www.sina.com?from=1593759614 ]
+[2020-07-03 07:00:14]   info:[ https://www.baidu.com?from=1593759614 ]
+```
+
 [回到目录](#目录)
