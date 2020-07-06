@@ -103,7 +103,11 @@ class Container extends IExtension
         //方法注入
         foreach ($calls as $key => $value) {
             if(is_numeric($key)) {
-                call_user_func([ $object, $value]);
+                if(is_array($value)) {
+                    call_user_func_array([$object, $value['method']], $value['params']);
+                } else {
+                    call_user_func([ $object, $value]);
+                }
                 continue;
             }
             call_user_func_array([ $object, $key], $value);
