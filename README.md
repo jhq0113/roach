@@ -11,6 +11,10 @@
 8.0K    ./src/events
 ```
 
+# 我的官方网站
+
+[https://404.360tryst.com/](https://404.360tryst.com/)
+
 # 安装方式
 
 ```bash
