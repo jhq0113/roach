@@ -7,6 +7,7 @@
  */
 namespace app\model;
 use roach\Container;
+use roach\events\Event;
 
 require __DIR__.'/bootstrap.php';
 
@@ -18,6 +19,18 @@ require __DIR__.'/bootstrap.php';
  */
 class User
 {
+    use Event;
+
+    /**
+     * @datetime 2020/7/6 10:49 上午
+     * @author   roach
+     * @email    jhq0113@163.com
+     */
+    public function init()
+    {
+        echo 'init'.PHP_EOL;
+    }
+
     /**
      * @var string
      * @datetime 2020/7/2 11:22 PM
@@ -106,6 +119,16 @@ echo json_encode([
 ], JSON_UNESCAPED_UNICODE).PHP_EOL;
 
 //-------------方法注入-------------
+
+// 1.无参数方法注入
+Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        'init',
+    ]
+]);
+
+// 2.有参数方法注入
 /**
  * @var \app\model\User $user2
  */
@@ -121,6 +144,22 @@ echo json_encode([
         'userName'    => $user2->userName,
         'currentTime'    => $user2->getCurrentTime(),
 ], JSON_UNESCAPED_UNICODE).PHP_EOL;
+
+// 3.多次调用方式
+
+Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        [
+            'method' => 'setTime',
+            'params' => [ time() ],
+        ],
+        [
+            'method' => 'setTime',
+            'params' => [ time() ],
+        ],
+    ]
+]);
 
 //-------------------放入容器--------------
 //将app\model\User放入容器，app\model\User对象并未创建
@@ -154,4 +193,5 @@ echo json_encode([
         'password'    => $reGetUser->password,
         'currentTime' => $reGetUser->getCurrentTime()
 ], JSON_UNESCAPED_UNICODE).PHP_EOL;
+
 

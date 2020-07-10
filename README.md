@@ -11,6 +11,10 @@
 8.0K    ./src/events
 ```
 
+# 我的官方网站
+
+[https://404.360tryst.com/](https://404.360tryst.com/)
+
 # 安装方式
 
 ```bash
@@ -90,6 +94,16 @@ class User
     public function __construct($userName = '')
     {
         $this->userName = $userName;
+    }
+
+     /**
+     * @datetime 2020/7/6 10:49 上午
+     * @author   roach
+     * @email    jhq0113@163.com
+     */
+    public function init()
+    {
+        $this->_currentTime = time();
     }
 
     /**
@@ -173,7 +187,36 @@ exit(json_encode([
 
 * 通过`calls`进行方法注入
 
+> 无参数方法注入
+
 ```php
+<?php
+/**
+ * @var \app\model\User $user2
+ */
+$user2 = Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        'init'
+    ],
+]);
+
+echo json_encode([
+    'currentTime'    => $user2->getCurrentTime()
+], JSON_UNESCAPED_UNICODE).PHP_EOL;
+```
+
+> 以上例程会调用一次`init`方法，运行输出
+
+```json
+{"currentTime":1593735048}
+```
+
+
+> 有参数方法注入
+
+```php
+<?php
 /**
  * @var \app\model\User $user2
  */
@@ -195,6 +238,40 @@ echo json_encode([
 
 ```json
 {"userName":"boss zhou", "currentTime":1593755048}
+```
+
+> 调用队列
+
+```php
+<?php
+/**
+ * @var \app\model\User $user3
+ */
+$user3 = Container::createRoach([
+    'class' => 'app\model\User',
+    'calls' => [
+        '__construct' => ['boss zhou'],
+        [
+            'method' => 'setTime',
+            'params' => [ time() ],
+        ],
+        [
+            'method' => 'setTime',
+            'params' => [ time() ],
+        ],
+    ],
+]);
+
+echo json_encode([
+    'userName'       => $user3->userName,
+    'currentTime'    => $user3->getCurrentTime(),
+], JSON_UNESCAPED_UNICODE).PHP_EOL;
+```
+
+> 以上例程，会先调用构造函数，然后调用两次`setTime`方法，以上例程输出
+
+```json
+{"userName":"boss zhou", "currentTime":1593756048}
 ```
 
 [回到目录](#目录)
