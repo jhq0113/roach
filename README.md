@@ -21,18 +21,6 @@
 composer require jhq0113/roach
 ```
 
-## 我的主页
-
-![image](/51cto-yafr.png) 
-
-![image](/me.png) 
-
-# 公众号及QQ群
-
-![image](/public.jpg)
-
-![image](/qq.png)
-
 <!-- TOC -->
 # 目录
 
@@ -609,3 +597,15 @@ $respList = Request::multiRequest($req1, $req2, $req3);
 ```
 
 [回到目录](#目录)
+
+## 我的主页
+
+![image](/51cto-yafr.png) 
+
+![image](/me.png) 
+
+# 公众号及QQ群
+
+![image](/public.jpg)
+
+![image](/qq.png)
