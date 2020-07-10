@@ -27,9 +27,11 @@ composer require jhq0113/roach
 
 ![image](/me.png) 
 
-# 公众号
+# 公众号及QQ群
 
 ![image](/public.jpg)
+
+![image](/qq.png)
 
 <!-- TOC -->
 # 目录
