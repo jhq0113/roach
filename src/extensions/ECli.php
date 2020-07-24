@@ -32,17 +32,6 @@ class ECli extends IExtension
         return array_slice($_SERVER['argv'],1);
     }
 
-    /**输出消息
-     * @param string $msg
-     * @datetime 2019/8/30 18:03
-     * @author roach
-     * @email jhq0113@163.com
-     */
-    static public function msg($msg)
-    {
-        echo '['.date('Y-m-d H:i:s').'] '. $msg. PHP_EOL;
-    }
-
     /**
      * @param string $msg
      * @param array  $context
@@ -52,9 +41,7 @@ class ECli extends IExtension
      */
     static public function info($msg, array $context=[])
     {
-        $msg = EString::interpolate($msg, $context);
-        $msg = " \033[1;32m info:[ ".$msg." ]\033[0m";
-        self::msg($msg);
+        echo EString::interpolate("\033[1;32m ".date('Y-m-d H:i:s')." info: ".$msg." \033[0m".PHP_EOL, $context);
     }
 
     /**
@@ -66,9 +53,7 @@ class ECli extends IExtension
      */
     static public function warn($msg, array $context=[])
     {
-        $msg = EString::interpolate($msg, $context);
-        $msg = " \033[1;33m warn:[ ".$msg." ]\033[0m";
-        self::msg($msg);
+        echo EString::interpolate("\033[1;33m ".date('Y-m-d H:i:s')." warn: ".$msg." \033[0m".PHP_EOL, $context);
     }
 
     /**
@@ -80,8 +65,6 @@ class ECli extends IExtension
      */
     static public function error($msg, array $context=[])
     {
-        $msg = EString::interpolate($msg, $context);
-        $msg = " \033[1;31m error:[ ".$msg." ]\033[0m";
-        self::msg($msg);
+        echo EString::interpolate("\033[1;31m ".date('Y-m-d H:i:s')." warn: ".$msg." \033[0m".PHP_EOL, $context);
     }
 }
