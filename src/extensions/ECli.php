@@ -41,6 +41,9 @@ class ECli extends IExtension
      */
     static public function info($msg, array $context=[])
     {
+        if(!self::cli()) {
+            return;
+        }
         echo EString::interpolate("\033[1;32m ".date('Y-m-d H:i:s')." info: ".$msg." \033[0m".PHP_EOL, $context);
     }
 
@@ -53,6 +56,9 @@ class ECli extends IExtension
      */
     static public function warn($msg, array $context=[])
     {
+        if(!self::cli()) {
+            return;
+        }
         echo EString::interpolate("\033[1;33m ".date('Y-m-d H:i:s')." warn: ".$msg." \033[0m".PHP_EOL, $context);
     }
 
@@ -65,6 +71,9 @@ class ECli extends IExtension
      */
     static public function error($msg, array $context=[])
     {
-        echo EString::interpolate("\033[1;31m ".date('Y-m-d H:i:s')." warn: ".$msg." \033[0m".PHP_EOL, $context);
+        if(!self::cli()) {
+            return;
+        }
+        echo EString::interpolate("\033[1;31m ".date('Y-m-d H:i:s')." error: ".$msg." \033[0m".PHP_EOL, $context);
     }
 }
